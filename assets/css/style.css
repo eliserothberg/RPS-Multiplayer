@@ -1,0 +1,103 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body  {
+/*  font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif;
+*/background-image: url(../images/ocean-fish.png);
+  background-size: 100%;
+  background-attachment: fixed;
+  width: 980px;
+}
+h1 {
+  font-size: 40px;
+  text-align: center;
+  color: white;
+}
+h4 {
+  font-size: 14px;
+}
+
+.choiceButton {
+ /* margin-left: 10%;*/
+  color: black;
+  width: 80%;
+  background-color: Transparent;
+  background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+  /*background-color: beige;*/
+  /*height: 50px;*/
+  margin-top: 10px;
+  margin-bottom: 5px;
+  text-align: center;
+/*  text-decoration: none;
+*/  font-size: 18px;
+}
+.choiceButton:hover {
+  background-color: #00664d;
+}
+
+.col-sm-12 {
+}
+.col-sm-10 {
+margin-left: 15%;  
+/*  height: 30px;
+*/}
+
+.playBox {
+  width:200px;
+  min-height:200px;    
+  margin:5px;
+  background:#fff;
+  font-size:14px;
+  text-align: center;
+  display:inline-block;
+  position:relative;
+  float:left;
+  border-style: solid;
+  border-color: grey;
+  border-width: 3px;
+}
+
+p {
+  text-align: center;
+}
+p#about,
+#game>p {
+  color: white;
+}
+
+#chatWindow {
+  height: 300px;
+  width: 450px;
+  background-color: white;
+  margin-left: 100px;
+}
+
+input#message {
+  width: 405px;
+/*  margin-top: 270px;
+*/  float: left;
+margin-left: 100px;
+}
+
+/*button#submitChat{
+  margin-top: 270px;
+}*/
+form#player-form {
+  margin-left: 350px;
+  margin-bottom: 10px;
+}
+
+div#chatWindow {
+  margin-left: 100px;
+}
+
+#addPlayer {
+  height: 40px;
+/*  width: 50px;
+*/}
