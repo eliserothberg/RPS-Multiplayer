@@ -41,6 +41,15 @@ var playerNumbers = 2;
 var gameLocation = 'https://rpsfirebase.firebaseio.com/';
 var playerLocation = 'playerList';
 var PlayerDataLocation = 'playerData';
+var playerName1;
+var playerName2;
+var playerOne;
+var playereTwo;
+var playState1;
+var playState2;
+var win = 0;
+var loss = 0;
+
 
 var users = new Firebase('https://rpsfirebase.firebaseio.com');
 
@@ -49,9 +58,7 @@ var users = new Firebase('https://rpsfirebase.firebaseio.com');
 // totalVisitors.transaction(function (currentData) {
 //    currentData + 1;
 // });
- 
-
-function getPlayers() {
+// function getPlayers() {
   $("#addUser").on("click", function() {
 
 var name = $('#player-input').val().trim(); 
@@ -63,27 +70,33 @@ var name = $('#player-input').val().trim();
 
   var playerOne = new Firebase('https://rpsfirebase.firebaseio.com/playerData/0');
     // var playerName1 = playerOne.val();
-    playerOne.once("value", function(snapshot) {
+    playerOne.on("value", function(snapshot) {
       var nameSnapshot1 = snapshot.child("userId")
       var playerName1 = nameSnapshot1.val();
 
-      console.log("playerName1 =" + playerName1);
+      console.log("playerName1 line 74 = " + playerName1);
+      console.log("playerOne line 75 = " + playerOne);
     });
 var playerTwo =  new Firebase('https://rpsfirebase.firebaseio.com/playerData/1');
-       playerTwo.once("value", function(snapshot) {
+       playerTwo.on("value", function(snapshot) {
         var nameSnapshot2 = snapshot.child("userId")
       var playerName2 = nameSnapshot2.val();
-      console.log("playerName2 =" + playerName2);
+      var one = database.ref('/playerData/0/userId/')
+      console.log("playerName2 line 79 = " + playerName2);
+            console.log("one line 80 = " + one);
+
     });
     
     return false;
 
 });
-  var PlayerDataLocation = 'playerData';
 
+console.log("playerName1 line 88= " + playerName1);
+console.log("playerName2 line 89= " + playerName2);
+      console.log("playerOne line 90 = " + playerOne);
 
-};
-getPlayers();
+// };
+// getPlayers();
 // The maximum number of players.  If there are already 
 // with playerNumber assigned, users won't be able to join the game.
 var playerNumber = 2;
@@ -105,7 +118,8 @@ function setGame(myPlayerNumber, userId, justJoinedGame, gameRef) {
   console.log('You are player number ' + (myPlayerNumber + 1) + 
       '.  Your data will be located at ' + playerDataRef.toString());
   $("#updates").html("Waiting for player to join.");
-
+console.log("playerName1 line 108= " + playerName1);
+console.log("playerName2 line 109= " + playerName2);
   if (justJoinedGame) {
     console.log(userId + ' just joined game.');
     $("#welcome").html(userId + " just joined the game!");
@@ -135,14 +149,22 @@ function setGame(myPlayerNumber, userId, justJoinedGame, gameRef) {
     
     playerDataRef.set({
       userId: userId, 
-      state: 'game state'
+      win: 0,
+      loss: 0 
     });
+
   
   // $("#player1").html(userId[0]);
     // $("#player2").html(userId[1]);
 };
- 
-    // });
+
+ if (playerNumbers >1) {
+      // $("#updates").html("Let's play!");
+      var turn = database.ref("/turn");
+      playerTurn = turn.set(0);
+    }
+ console.log("turn = " + turn + " and playerTurn = " + playerTurn);
+     // });
     // var oneName = new 
     // console.log(playerOne);
     // console.log(playerTwo.data);
@@ -150,6 +172,7 @@ function setGame(myPlayerNumber, userId, justJoinedGame, gameRef) {
 function assignPlayerNumber(userId, gameRef) {
   var playerListRef = gameRef.child(playersLocation);
   var myPlayerNumber, alreadyInGame = false;
+        console.log("userID = " + userId + " and myPlayerNumber = " + myPlayerNumber);
 
   playerListRef.transaction(function(playerList) {
     // Attempt to (re)join the given game. Notes:
@@ -172,6 +195,7 @@ function assignPlayerNumber(userId, gameRef) {
         // Already seated so abort transaction to not unnecessarily update playerList.
         alreadyInGame = true;
         myPlayerNumber = i; // Tell completion callback which seat we have.
+        console.log("userID = " + userId + " and myPlayerNumber = " + myPlayerNumber);
         return;
       }
     }
@@ -181,24 +205,43 @@ function assignPlayerNumber(userId, gameRef) {
       playerList[i] = userId;  // Reserve our seat.
       myPlayerNumber = i; // Tell completion callback which seat we reserved.
       return playerList;
-    }
-
-    if (playerNumber == 1) {
-      $("#updates").html("Let's play!");
-      // $("#updates").html("Great!");
+              console.log("206- userID = " + userId + " and myPlayerNumber = " + myPlayerNumber);
 
     }
-    // if (i === 1) {
-    //   $("#updates").html("Great!");
+        // console.log("userID = " + userId + " and myPlayerNumber = " + myPlayerNumber);
+
+    // if (playerNumber == 1) {
+    //   $("#updates").html("Let's play!");
+    //   // $("#updates").html("Great!");
 
     // }
+   
+
 
     // Abort transaction and tell completion callback we failed to join.
+    
     myPlayerNumber = null;
+
+    playerDataRef.on("value", function(snap) {
+
+  // If they are connected..
+  if( snap.val() ) {
+
+
+    // Remove user from the connection list when they disconnect.
+    playerDataRef.onDisconnect().remove();
+
+  };
+
+});
 
     // playerDataRef.removeOnDisconnect();
   }, 
+ // console.log("foo = " + foo);
+ //       console.log("bar = " + bar);
+        // console.log("userID = " + userId + " and myPlayerNumber = " + myPlayerNumber);
 
+        // console.log("playerList = " + playerList + " and gamRef = " + gameRef);
 
   function (error, committed) {
     // Transaction has completed.  Check if it succeeded or we were already in
@@ -223,35 +266,88 @@ function setChoice(myPlayerNumber, myUserId, myChoice) {
 function takeTurns() {
 
 //if player1 status 
-for( var i = 0; i < playerNumber; i++) {
-//   var turn = new Firebase("https://rpsfirebase.firebaseio.com/assignSpace/playerData/")[i];
-    $(document).on('click', '.choiceButton', function() {
-      var theChoice = $(this).attr('name')
+// for( var i = 0; i < playerNumber; i++) {
+  // var turn = new Firebase("https://rpsfirebase.firebaseio.com/assignSpace/playerData/0/state");
+//     var boo = database.ref("/playerData/0/state");
+// // console.log("boo = " + boo.val());
 
+// boo.on("child_added", function(childSnapshot){
+//    var boo = database.ref("/playerData/0/state");
+// console.log("boo = " + $(boo).val());
+//   var loo = $(boo).val();
+  console.log("pd" + playerLocation);
+// });
+// function choice(){
+    
+      $(document).on('click', '.choiceButton', function() {
+      var theChoice = $(this).attr('name')
+       var firstP = database.ref("/playerData/0/userId");
+       firstP.once('value', function(snap) {
+        var play1 = snap.val();
+               console.log("play1  = " + play1);
+      var secondP = database.ref("/playerData/1/userId");
+       secondP.once('value', function(snap) {
+        var play2 = snap.val();
+               console.log("play2  = " + play2);
+
+       // });
+     
+       // var bar = database.ref("/playerData/1/userId");
+       //  var bar2 = bar.child("/playerData/1/userId");
+       // console.log("foo.child  = " + foo.child);
+       // console.log("bar  = " + bar2);
+// if (boo == false) {
     //   console.log("this was clicked =" + choiceButton);
-      // var moon1 = ("#moon1");
+      // var moon[i] = ("#moon"[i]);
       // var fish1 = ("#fish1");
       // var ocean1 = ("#ocean1")
 
-      if (theChoice === "moon1") {
-        var thisMoon = moon1;
-             console.log("this is '#moon[i]: " + thisMoon);
+      var play = [];
 
-      $('#fish1').hide();
-      $('#ocean1').hide();
+for (i = 1; i < 3; i++) {
+    var play[i] = chooser.text();
+
+// for (var i = 1; i <3; i++) {
+   
+     
+        console.log("chooser = " + chooser);
+      }
+        // var thisMoon = moon1;
+        //      console.log("this is '#moon[i]: " + thisMoon);
+ if (theChoice === "moon") {
+      $('.fish').hide();
+      $('.ocean').hide();
+       $('.moon').html(chooser + " chose moon!");
+        console.log("chooser = " + chooser);
     }
-    else if (theChoice === "fish"[i]) {
-      $('#moon'[i]).hide();
-      $('#ocean'[i]).hide();
+    else if (theChoice === "fish") {
+      $('.moon').hide();
+      $('.ocean').hide();
+      $('.fish').html( chooser + " chose fish!");
     }
     else {
-      $('#moon'[i]).hide();
-      $('#fish'[i]).hide();
-            console.log("this is the choice: " + theChoice);
+      $('.moon').hide();
+      $('.fish').hide();
+      $('.ocean').html( chooser + " chose ocean!");
+            
             // console.log("this is '#moon[i]: " + moon[i]);
+console.log("this is the choice: " + theChoice);
+    // };
+  };
 
-    };
-  });
+
+});
+});
+});
+};
+// };
+
+
+// choice();
+  // playerDataRef.push({
+  //     choice: theChoice 
+  //   });
+  // });
   // });
   //   $(".choiceButton").on("click", function() {
 
@@ -266,18 +362,18 @@ for( var i = 0; i < playerNumber; i++) {
     // else {
     //   $('#moon[i]').hide();
     //   $('#fish[i]').hide();
-    // };
-  };
-    //  if $("#fish1").on("click", function() {
-    //   $('#moon[i]').hide();
-    //   $('#ocean[i]').hide();
-    // }
-    // else {
-    //   $('#fish[i]').hide();
-    //   $('#moon[i]').hide();
-    // };
-    //switch player1game sataus to false??
-    };
+  //   // };
+  // });
+  //   //  if $("#fish1").on("click", function() {
+  //   //   $('#moon[i]').hide();
+  //   //   $('#ocean[i]').hide();
+  //   // }
+  //   // else {
+  //   //   $('#fish[i]').hide();
+  //   //   $('#moon[i]').hide();
+  //   // };
+  //   //switch player1game sataus to false??
+  //   };
 
 takeTurns();
 // };
