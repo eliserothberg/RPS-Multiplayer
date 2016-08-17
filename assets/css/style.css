@@ -4,8 +4,7 @@
 }
 
 body  {
-/*  font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif;
-*/background-image: url(../images/ocean-fish.png);
+  background-image: url(../images/ocean-fish.png);
   background-size: 100%;
   background-attachment: fixed;
   width: 980px;
@@ -18,35 +17,35 @@ h1 {
 h4 {
   font-size: 14px;
 }
+p#winner {
+  font-size: 25px;
+  margin-top: 70px;
+}
 
 .choiceButton {
- /* margin-left: 10%;*/
   color: black;
   width: 80%;
   background-color: Transparent;
   background-repeat:no-repeat;
-    border: none;
-    cursor:pointer;
-    overflow: hidden;
-    outline:none;
-  /*background-color: beige;*/
-  /*height: 50px;*/
+  border: none;
+  cursor:pointer;
+  overflow: hidden;
+  outline:none;
   margin-top: 5px;
   margin-bottom: 2px;
   text-align: center;
-/*  text-decoration: none;
-*/  font-size: 18px;
+  font-size: 18px;
 }
 .choiceButton:hover {
   background-color: #a3abc2;
 }
 
 .col-sm-12 {
+  margin-left: 30px;
 }
-.col-sm-10 {
-margin-left: 15%;  
-/*  height: 30px;
-*/}
+.col-sm-9 {
+margin-left: 80px;  
+}
 
 .playBox {
   width:200px;
@@ -63,12 +62,17 @@ margin-left: 15%;
   border-width: 3px;
 }
 
-p {
+.col-sm-9>p {
   text-align: center;
+  color: white;
 }
 p#about,
 #game>p {
   color: white;
+}
+
+#game {
+  margin-left: 260px;
 }
 
 #chatWindow {
@@ -80,24 +84,20 @@ p#about,
 
 input#message {
   width: 405px;
-/*  margin-top: 270px;
-*/  float: left;
-margin-left: 100px;
+  float: left;
+  margin-left: 100px;
 }
 
-/*button#submitChat{
-  margin-top: 270px;
-}*/
 form#player-form {
-  margin-left: 350px;
+  margin-left: -25px;
   margin-bottom: 10px;
 }
 
-div#chatWindow {
+
+#chatWindow {
   margin-left: 100px;
 }
 
 #addPlayer {
   height: 40px;
-/*  width: 50px;
-*/}
+}

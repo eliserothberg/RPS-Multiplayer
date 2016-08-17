@@ -5,10 +5,7 @@ $(document).ready(function() {
       $('#moon2').hide();
       $('#fish2').hide();
       $('#ocean2').hide();
-//access things nested in data: reread this website:
-//https://www.firebase.com/docs/web/guide/understanding-data.html
 
-  // Initialize Firebase
   var config = {
     apiKey: "AIzaSyDUEH5HKaRY_A5IRXsbiaoZKVSkxMGwgMA",
     authDomain: "rpsfirebase.firebaseapp.com",
@@ -17,26 +14,7 @@ $(document).ready(function() {
   };
   firebase.initializeApp(config);
 
-// Create a variable to reference the database
 var database = firebase.database();
-
-var connectionsRef = database.ref("/connections");
-
-var connectedRef = database.ref(".info/connected");
-
-connectedRef.on("value", function(snap) {
-
-  // If they are connected..
-  if( snap.val() ) {
-
-    // Add user to the connections list.
-    var con = connectionsRef.push(true);
-
-    // Remove user from the connection list when they disconnect.
-    con.onDisconnect().remove();
-  };
-
-});
 
 var playerNumbers = 2;
 var gameLocation = 'https://rpsfirebase.firebaseio.com/';
@@ -44,26 +22,21 @@ var playerLocation = 'playerList';
 var PlayerDataLocation = 'playerData';
 var firstPlayer;
 var secondPlayer;
-// var playerOne;
-// var playerTwo;
-// var playState1;
-// var playState2;
+var userId;
 var wins = 0;
 var losses = 0;
 var win;
 var loss;
-// var ties = 0;
-
 
 var users = database.ref();
-
+var userId = name;
 
   $("#addUser").on("click", function() {
 
     var name = $('#player-input').val().trim(); 
       console.log("inside assignPlayers input name = " + name);
 
-    var userId = name;
+    userId = name;
     var gameRef = database.ref();
     
     assignPlayerNumber(userId, gameRef);
@@ -76,71 +49,55 @@ var users = database.ref();
     var gameLocation = 'https://rpsfirebase.firebaseio.com';
     var playersLocation = 'playerList';
 
-  
     function setGame(myPlayerNumber, userId, justJoinedGame, gameRef) {
       var playerDataRef = gameRef.child(PlayerDataLocation).child(myPlayerNumber);
-      console.log('You are player number ' + (myPlayerNumber + 1) + 
-      '.  Your data will be located at ' + playerDataRef.toString());
+      console.log('You are player number ' + (myPlayerNumber + 1));
       var p1 = database.ref("playerData/0/userId");
       p1.once('value', function(snap) {
         var firstPlayer = snap.val();
       
-      console.log(firstPlayer + " is 1st player");
+        console.log(firstPlayer + " is 1st player");
 
-       var p2 = database.ref("playerData/1/userId");
+        var p2 = database.ref("playerData/1/userId");
         p2.once('value', function(snap) {
-        var secondPlayer = snap.val();
+          var secondPlayer = snap.val();
       
-      console.log(secondPlayer + " is 2nd player");
+          console.log(secondPlayer + " is 2nd player");
 
-      // for (i = 0; i < 2; i++) {
-        if (justJoinedGame) {
-        $("#welcome").html(userId + " just joined the game!");
-        $("#userAdd").hide();
+          if (justJoinedGame) {
+            $("#welcome").html(userId + " just joined the game!");
+            $("#userAdd").hide();
         
-        console.log(userId + ' just joined game.');
+            console.log(userId + ' just joined game.');
   
-        if (myPlayerNumber == 0) {
-          $("#updates").html('You are player number ' + (myPlayerNumber + 1));
-          $("#player1").html(userId + " - Player 1");
-          $('#moon1').show();
-          $('#fish1').show();
-          $('#ocean1').show();
-          $("#player2").html(secondPlayer + " - Player 2");
+            if (myPlayerNumber == 0) {
+              $("#updates").html('You are player number ' + (myPlayerNumber + 1));
+              $("#player1").html(userId + " - Player 1");
+              $('#moon1').show();
+              $('#fish1').show();
+              $('#ocean1').show();
+              $("#player2").html(secondPlayer + " - Player 2");
+            }
 
-           // playerDataRef.on("child_changed", function(snapshot) {    
-           //  var playS = database.ref("playerData/0/userId");
-           //  playS.on('child_added', function(snap){
-           //    var secPlay = snap.val();
-           //    $("#player2").html(secPlay + " - Player 2");
-           //    });
-           //    console.log("secPlay = " + secPlay);
-
-           //  });
-
-          // };
-        };
-        if (myPlayerNumber == 1) {
-          $("#updates").html('You are player number ' + (myPlayerNumber + 1));
-          $("#player2").html(userId + " - Player 2");
-          $('#moon2').show();
-          $('#fish2').show();
-          $('#ocean2').show();
-          $("#player1").html(firstPlayer + " - Player 1");
-
-          // var database.ref("/pla")
-        };
-        
-        // var playS = database.ref("playerData/0/userId");
-        //  playS.on('child_added', function(snap){
-        //   var secPlay = snap.val();
-        //    $("#player2").html(secPlay + " - Player 2");
-        //    console.log("secPlay = " + secPlay);
-        //   });
-        }
-      });      
-
-    });
+            if (myPlayerNumber == 1) {
+              $("#updates").html('You are player number ' + (myPlayerNumber + 1));
+              $("#player2").html(userId + " - Player 2");
+              $('#moon2').show();
+              $('#fish2').show();
+              $('#ocean2').show();
+              $("#player1").html(firstPlayer + " - Player 1");
+            };
+          
+            //still can't get Player 1 screen to update and show Player 2 (sigh).
+            var playS = database.ref("playerData/1/userId");
+             playS.on('child_added', function(snap){
+              var secPlay = snap.val();
+               $("#player2").html(secPlay + " - Player 2");
+               console.log("secPlay = " + secPlay);
+              });
+          }
+        });      
+      });
 
       playerDataRef.set({
         userId: userId, 
@@ -149,7 +106,6 @@ var users = database.ref();
         loss: 0
       });
     };
-
 
       console.log("firstPlayer = " + firstPlayer);
 
@@ -213,16 +169,17 @@ function takeTurns() {
     var theChoice = $(this).attr('name')
 
     var firstP = database.ref("/playerData/0/userId");
+
       firstP.once('value', function(snap) {
       var play1 = snap.val();
       console.log("play1  = " + play1);
-      console.log("line 231 this is the (early) choice player 1: " + theChoice);
+      console.log("this is the (early) choice player 1: " + theChoice);
 
       var secondP = database.ref("/playerData/1/userId");
         secondP.once('value', function(snap) {
           var play2 = snap.val();
           console.log("play2  = " + play2);
-          console.log("line 237 this is the (early) choice player 2: " + theChoice);
+          console.log("this is the (early) choice player 2: " + theChoice);
             var option2 = database.ref()
       
             var theTurn = database.ref("/turn");
@@ -297,184 +254,78 @@ function takeTurns() {
                     console.log("choice1 = " + choice1)
 
                     var opt2 = database.ref("/playerData/1/choice");
-                    opt2.once('value', function(snap) {
+                      opt2.once('value', function(snap) {
                       var choice2 = snap.val();
                       console.log("choice2 = " + choice2)
        
-                        if ((choice1 == 'moon') || (choice1 == 'fish') || (choice1 == 'ocean')){
+                    if ((choice1 == 'moon') || (choice1 == 'fish') || (choice1 == 'ocean')){
+                      var rules = {
+                      "moon":"ocean",
+                      "ocean":"fish",
+                      "fish":"moon"
+                      }
 
-                        console.log("choice1 = " + choice1 + " and choice2 = " + choice2)
-
-                          if ((choice1 == 'moon') && (choice2 == 'ocean')){
-                            var winRef1 = database.ref()
-                            var newWin1 = winRef1.child("playerData/0")
-                            var win1 = {win: wins + 1}
-                            winRef1.child("playerData/0").update(win1);
-
-                            var winA = database.ref("/playerData/0/win");
-                            winA.once('value', function(snap) {
-                            var aWin1 = snap.val();
-                            console.log("win = " + aWin1)
-
-                            var lossRef2 = database.ref()
-                            var newloss2 = lossRef2.child("playerData/1")
-                            var loss2 = {loss: losses + 1}
-                            lossRef2.child("playerData/1").update(loss2);
-
-                            var lossB = database.ref("/playerData/1/loss");
-                            lossB.once('value', function(snap) {
-                              var aLoss2 = snap.val();
-                              console.log("loss = " + aLoss2)
-                  
-                              $('#winner').html(play1 + " wins!");
-                              $('#outcomeWin1').html(aWin1);
-                              $('#outcomeloss2').html(aLoss2);
-                              });
-                            });
-                          }
-                          if ((choice1 == 'moon') && (choice2 == 'fish')){
-                           var winRef2 = database.ref()
-                            var newwin2 = winRef2.child("playerData/1")
-                            var win2 = {win: wins + 1}
-                            winRef2.child("playerData/1").update(win2);
-
-                            var winB = database.ref("/playerData/1/win");
-                            winB.once('value', function(snap) {
-                            var aWin2 = snap.val();
-                            console.log("win = " + aWin2)
-
-                            var lossRef1 = database.ref()
-                            var newloss1 = lossRef1.child("playerData/0")
-                            var loss1 = {loss: losses + 1}
-                            lossRef1.child("playerData/0").update(loss1);
-
-                            var lossA = database.ref("/playerData/0/loss");
-                            lossA.once('value', function(snap) {
-                              var aLoss1 = snap.val();
-                              console.log("loss = " + aLoss1)
-                  
-                              $('#winner').html(play2 + " wins!");
-                              $('#outcomeWin2').html(aWin2);
-                              $('#outcomeloss1').html(aLoss1);
-                              });
-                            });
-                          }
-                          if ((choice1 =='ocean') && (choice2 == 'moon')){
-                           var winRef2 = database.ref()
-                            var newwin2 = winRef2.child("playerData/1")
-                            var win2 = {win: wins + 1}
-                            winRef2.child("playerData/1").update(win2);
-
-                            var winB = database.ref("/playerData/1/win");
-                            winB.once('value', function(snap) {
-                            var aWin2 = snap.val();
-                            console.log("win = " + aWin2)
-
-                            var lossRef1 = database.ref()
-                            var newloss1 = lossRef1.child("playerData/0")
-                            var loss1 = {loss: losses + 1}
-                            lossRef1.child("playerData/0").update(loss1);
-
-                            var lossA = database.ref("/playerData/0/loss");
-                            lossA.once('value', function(snap) {
-                              var aLoss1 = snap.val();
-                              console.log("loss = " + aLoss1)
-                  
-                              $('#winner').html(play2 + " wins!");
-                              $('#outcomeWin2').html(aWin2);
-                              $('#outcomeloss1').html(aLoss1);
-                              });
-                            });
-                          }
-                          if ((choice1 == 'ocean') && (choice2 == 'fish')){
-                          var winRef1 = database.ref()
-                            var newWin1 = winRef1.child("playerData/0")
-                            var win1 = {win: wins + 1}
-                            winRef1.child("playerData/0").update(win1);
-
-                            var winA = database.ref("/playerData/0/win");
-                            winA.once('value', function(snap) {
-                            var aWin1 = snap.val();
-                            console.log("win = " + aWin1)
-
-                            var lossRef2 = database.ref()
-                            var newloss2 = lossRef2.child("playerData/1")
-                            var loss2 = {loss: losses + 1}
-                            lossRef2.child("playerData/1").update(loss2);
-
-                            var lossB = database.ref("/playerData/1/loss");
-                            lossB.once('value', function(snap) {
-                              var aLoss2 = snap.val();
-                              console.log("loss = " + aLoss2)
-                  
-                              $('#winner').html(play1 + " wins!");
-                              $('#outcomeWin1').html(aWin1);
-                              $('#outcomeloss2').html(aLoss2);
-                              });
-                            });
-                          }
-                          if ((choice1 == 'fish') && (choice2 == 'moon')){
-                          var winRef1 = database.ref()
-                            var newWin1 = winRef1.child("playerData/0")
-                            var win1 = {win: wins + 1}
-                            winRef1.child("playerData/0").update(win1);
-
-                            var winA = database.ref("/playerData/0/win");
-                            winA.once('value', function(snap) {
-                            var aWin1 = snap.val();
-                            console.log("win = " + aWin1)
-
-                            var lossRef2 = database.ref()
-                            var newloss2 = lossRef2.child("playerData/1")
-                            var loss2 = {loss: losses + 1}
-                            lossRef2.child("playerData/1").update(loss2);
-
-                            var lossB = database.ref("/playerData/1/loss");
-                            lossB.once('value', function(snap) {
-                              var aLoss2 = snap.val();
-                              console.log("loss = " + aLoss2)
-                  
-                              $('#winner').html(play1 + " wins!");
-                              $('#outcomeWin1').html(aWin1);
-                              $('#outcomeloss2').html(aLoss2);
-                              });
-                            });
-                          }
-                          if ((choice1 == 'fish') && (choice2 == 'ocean')){
-                            var winRef2 = database.ref()
-                            var newwin2 = winRef2.child("playerData/1")
-                            var win2 = {win: wins + 1}
-                            winRef2.child("playerData/1").update(win2);
-
-                            var winB = database.ref("/playerData/1/win");
-                            winB.once('value', function(snap) {
-                            var aWin2 = snap.val();
-                            console.log("win = " + aWin2)
-
-                            var lossRef1 = database.ref()
-                            var newloss1 = lossRef1.child("playerData/0")
-                            var loss1 = {loss: losses + 1}
-                            lossRef1.child("playerData/0").update(loss1);
-
-                            var lossA = database.ref("/playerData/0/loss");
-                            lossA.once('value', function(snap) {
-                              var aLoss1 = snap.val();
-                              console.log("loss = " + aLoss1)
-                  
-                              $('#winner').html(play2 + " wins!");
-                              $('#outcomeWin1').html(aWin2);
-                              $('#outcomeloss2').html(aLoss1);
-                              });
-                            });
-                          }
-                          if (choice1 == choice2){
-                          // ties++
-                          $('#winner').html("It's a tie!");
+                      if (choice1 == choice2) {
+                         $('#winner').html("It's a tie!")
                           console.log("It's a tie");
+                      } 
+                      else if (rules[choice1] == choice2) {
+                          var winRef1 = database.ref()
+                            var newWin1 = winRef1.child("playerData/0")
+                            var win1 = {win: wins + 1}
+                            winRef1.child("playerData/0").update(win1);
+
+                            var winA = database.ref("/playerData/0/win");
+                            winA.once('value', function(snap) {
+                            var aWin1 = snap.val();
+                            console.log("win = " + aWin1)
+
+                            var lossRef2 = database.ref()
+                            var newloss2 = lossRef2.child("playerData/1")
+                            var loss2 = {loss: losses + 1}
+                            lossRef2.child("playerData/1").update(loss2);
+
+                            var lossB = database.ref("/playerData/1/loss");
+                            lossB.once('value', function(snap) {
+                              var aLoss2 = snap.val();
+                              console.log("loss = " + aLoss2)
+                  
+                              $('#winner').html(play1 + " wins!");
+                              $('#outcomeWin1').html(aWin1);
+                              $('#outcomeloss2').html(aLoss2);
+                            });
+                          });
+                        } 
+                        else {
+                          var winRef2 = database.ref()
+                          var newwin2 = winRef2.child("playerData/1")
+                          var win2 = {win: wins + 1}
+                          winRef2.child("playerData/1").update(win2);
+
+                          var winB = database.ref("/playerData/1/win");
+                            winB.once('value', function(snap) {
+                            var aWin2 = snap.val();
+                            console.log("win = " + aWin2)
+
+                            var lossRef1 = database.ref()
+                            var newloss1 = lossRef1.child("playerData/0")
+                            var loss1 = {loss: losses + 1}
+                            lossRef1.child("playerData/0").update(loss1);
+
+                            var lossA = database.ref("/playerData/0/loss");
+                              lossA.once('value', function(snap) {
+                              var aLoss1 = snap.val();
+                              console.log("loss = " + aLoss1)
+                  
+                              $('#winner').html(play2 + " wins!");
+                              $('#outcomeWin2').html(aWin2);
+                              $('#outcomeloss1').html(aLoss1);
+                              });
+                            });
+                      
+                            var newTurn2 = database.ref();
+                            newTurn2.child('turn').set(2);
                           };
-                          
-                          var newTurn2 = database.ref();
-                          newTurn2.child('turn').set(2);
                         };
                       });  
                     });
@@ -489,9 +340,22 @@ function takeTurns() {
 
   takeTurns();
 
-  var pN = database.ref("/playerData/0/userId")
+    // This is not working- if I only have one
+    //visible, it will disconnect the correct one
+    //but if both are active, it takes all.
+    //Doesn't seem to matter where I put it- tried nearly everywhere
+    var pN2 = database.ref("/playerData/1")
+    pN2.onDisconnect("/playerData/1").remove();
+    var pNp2 = database.ref("/playerList/1")
+    pNp2.onDisconnect().remove();
 
-  console.log("playerData/0/userId = " + pN);
+    // var pN = database.ref("/playerData/0")
+    // pN.onDisconnect().remove();
+    // var pNp = database.ref("/playerList/0")
+    // pNp.onDisconnect().remove();
+
+    //haven't figured out how to show the name with the chat 
+    //otherwise it's working.
 
     var chatRef = database.ref();
     var messagesRef = chatRef.child("messages");
@@ -506,7 +370,6 @@ function takeTurns() {
       // $("#submitChat").on("click", function() {
   
       var message = {
-        // name: nameField(val),
       message: messageField.val()
       };
 
@@ -518,15 +381,6 @@ function takeTurns() {
   });
 
     messagesRef.limitToLast(10).on('child_added', function (snapshot) {
-
-      var p1 = database.ref("playerData/0/userId");
-      p1.once('value', function(snap) {
-        var firstPlayer = snap.val();
-
-      var p2 = database.ref("playerData/1/userId");
-      p2.once('value', function(snap) {
-        var secondPlayer = snap.val();
-      // var message1 = database.ref("/connections")
      
       var data = snapshot.val();
       var name = firstPlayer;
@@ -541,8 +395,9 @@ function takeTurns() {
 
       chatWindow[0].scrollTop = chatWindow[0].scrollHeight;
     });
-    });
-    });
+
+
+    //Not working at all:
 
   //   function resetGame() {
   //    var theTurn3 = database.ref("/turn");
